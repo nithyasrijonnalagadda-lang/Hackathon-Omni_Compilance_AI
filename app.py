@@ -24,33 +24,44 @@ st.write("Input a high-risk industry incident below. Our specialized AI agent sw
 
 # 2. Sidebar Configurations for Gemini
 st.sidebar.header("🔑 Configuration")
-api_key = st.sidebar.text_input("Enter Gemini API Key", type="password")
 
-# Initialize gemini_llm as None so it can be checked globally
+# Check if a secret key exists in your Streamlit Cloud background settings
+backend_secret_key = st.secrets.get("GEMINI_API_KEY", "")
+
+# Let users enter a key, but default it to your backend key so it stays hidden but active
+api_key_input = st.sidebar.text_input(
+    "Enter Gemini API Key (Optional for Judges)", 
+    type="password",
+    placeholder="Using backend deployment key..." if backend_secret_key else ""
+)
+
+# Determine the final key to use (prioritize manual input, fallback to background secret)
+final_api_key = api_key_input if api_key_input.strip() else backend_secret_key
+
 gemini_llm = None
 
-if not api_key:
+if not final_api_key:
     st.info("Please enter your Gemini API Key in the sidebar to activate the agents.")
 else:
     # Initialize the Gemini Model using CrewAI's LLM class
     gemini_llm = LLM(
         model="gemini/gemini-2.5-flash",
-        api_key=api_key,
+        api_key=final_api_key,
         temperature=0.4
     )
 
-# 3. User Input Section (Brought completely out of the conditional block)
+# 3. User Input Section
 st.markdown("### 🚨 Step 1: Report the Incident")
 
 incident_input = st.text_area(
     "Describe the incident in plain text (Include location, what happened, who was involved, and severity):",
-    placeholder="Example: At 10:30 AM in Manufacturing Plant Floor B, Sensor 4B overheated, leaking minor chemical coolant. Operator John Doe sustained a first-degree chemical burn on his forearm while attempting to close the secondary valve. The area has been evacuated, but shipments from B2B Client 'Apex Logistics' might experience a 24-hour dispatch delay.",
+    placeholder="Example: At 10:30 AM in Manufacturing Plant Floor B, Sensor 4B overheated, leaking minor chemical coolant...",
     height=150
 )
 
 if st.button("🔥 Initialize Agent Swarm Execution", type="primary"):
-    if not api_key:
-        st.error("Cannot run execution without a valid Gemini API Key. Please insert it in the sidebar.")
+    if not final_api_key:
+        st.error("Cannot run execution without a valid Gemini API Key. Please insert it in the sidebar or backend settings.")
     elif not incident_input.strip():
         st.error("Please provide an incident description first.")
     else:
