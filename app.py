@@ -30,11 +30,11 @@ if not api_key:
     st.info("Please enter your Gemini API Key in the sidebar to activate the agents.")
 else:
     # Initialize the Gemini Model using CrewAI's LLM class
-    gemini_llm = LLM(
-        model="gemini/gemini-2.5-flash",
-        api_key=api_key,
-        temperature=0.4
-    )
+gemini_llm = LLM(
+    model="gemini/gemini-2.5-flash",
+    api_key=api_key,
+    temperature=0.4
+)
 
     # 3. User Input Section
     st.markdown("### 🚨 Step 1: Report the Incident")
