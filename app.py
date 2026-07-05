@@ -29,15 +29,16 @@ api_key = st.sidebar.text_input("Enter Gemini API Key", type="password")
 if not api_key:
     st.info("Please enter your Gemini API Key in the sidebar to activate the agents.")
 else:
-     # Initialize the Gemini Model using CrewAI's LLM class
-     gemini_llm = LLM(
-     model="gemini/gemini-2.5-flash",
-     api_key=api_key,
-     temperature=0.4
-)
+    # Initialize the Gemini Model using CrewAI's LLM class
+    gemini_llm = LLM(
+        model="gemini/gemini-2.5-flash",
+        api_key=api_key,
+        temperature=0.4
+    )
 
-    # 3. User Input Section
-    st.markdown("### 🚨 Step 1: Report the Incident")
+# 3. User Input Section (Bring this fully back to the left wall!)
+st.markdown("### 🚨 Step 1: Report the Incident")
+
     incident_input = st.text_area(
         "Describe the incident in plain text (Include location, what happened, who was involved, and severity):",
         placeholder="Example: At 10:30 AM in Manufacturing Plant Floor B, Sensor 4B overheated, leaking minor chemical coolant. Operator John Doe sustained a first-degree chemical burn on his forearm while attempting to close the secondary valve. The area has been evacuated, but shipments from B2B Client 'Apex Logistics' might experience a 24-hour dispatch delay.",
