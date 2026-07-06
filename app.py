@@ -91,14 +91,25 @@ st.write("Input a high-risk industry incident below. Our specialized AI agent sw
 
 # 2. Sidebar Configurations for Gemini
 st.sidebar.header("🔑 Configuration")
+
+# Add a model selector dropdown so you can instantly switch tiers if one throws an account error
+selected_model = st.sidebar.selectbox(
+    "Select LLM Tier Group",
+    ["gemini-2.5-flash", "gemini-1.5-flash"],
+    index=0
+)
+
+# Check if a secret key exists in your Streamlit Cloud background settings
 backend_secret_key = st.secrets.get("GEMINI_API_KEY", "")
 
+# Let users enter a key, but default it to your backend key so it stays hidden but active
 api_key_input = st.sidebar.text_input(
     "Enter Gemini API Key (Optional for Judges)", 
     type="password",
     placeholder="Using backend deployment key..." if backend_secret_key else ""
 )
 
+# Determine the final key to use
 final_api_key = api_key_input if api_key_input.strip() else backend_secret_key
 gemini_llm = None
 
@@ -108,9 +119,9 @@ else:
     # Set environment variables explicitly to ensure LiteLLM multi-threading passes key down correctly
     os.environ["GEMINI_API_KEY"] = final_api_key
     
-    # Initialize the Gemini Model using CrewAI's LLM class
+    # Initialize the Gemini Model using the dynamically selected tier dropdown
     gemini_llm = LLM(
-        model="gemini/gemini-2.5-flash",
+        model=selected_model,
         api_key=final_api_key,
         temperature=0.4
     )
