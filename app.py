@@ -99,32 +99,27 @@ selected_model = st.sidebar.selectbox(
     index=0
 )
 
-# Check if a secret key exists in your Streamlit Cloud background settings
-backend_secret_key = st.secrets.get("GEMINI_API_KEY", "")
+# Parse multiple hidden keys from the background secrets string splitter setup
+backend_raw_keys = st.secrets.get("GEMINI_API_KEY", "")
+backend_keys_list = [k.strip() for k in backend_secret_key.split(",") if k.strip()] if isinstance(backend_secret_key, str) else []
 
-# Let users enter a key, but default it to your backend key so it stays hidden but active
+# Let users enter a key, but default fallback to active backend cluster indicators
 api_key_input = st.sidebar.text_input(
     "Enter Gemini API Key (Optional for Judges)", 
     type="password",
-    placeholder="Using backend deployment key..." if backend_secret_key else ""
+    placeholder=f"Loaded {len(backend_secret_key)} deployment keys..." if backend_secret_key else ""
 )
 
-# Determine the final key to use
-final_api_key = api_key_input if api_key_input.strip() else backend_secret_key
-gemini_llm = None
+# Assemble final key tracking list array structure
+keys_to_try = []
+if api_key_input.strip():
+    keys_to_try = [api_key_input.strip()]
+elif isinstance(backend_secret_key, str) and backend_secret_key.strip():
+    # Fallback to comma split lists
+    keys_to_try = [k.strip() for k in backend_secret_key.split(",") if k.strip()]
 
-if not final_api_key:
-    st.info("Please enter your Gemini API Key in the sidebar to activate the agents.")
-else:
-    # Set environment variables explicitly to ensure multi-threading passes key correctly
-    os.environ["GEMINI_API_KEY"] = final_api_key
-    
-    # Initialize the Gemini Model using the dynamically selected tier with mandatory provider prefix
-    gemini_llm = LLM(
-        model=f"gemini/{selected_model}",
-        api_key=final_api_key,
-        temperature=0.4
-    )
+if not keys_to_try:
+    st.sidebar.info("Please enter your Gemini API Key in the sidebar or connect backend keys to activate the swarm.")
 
 # 3. User Input Section
 st.markdown("### 🚨 Step 1: Report the Incident")
@@ -135,110 +130,142 @@ incident_input = st.text_area(
 )
 
 if st.button("🔥 Initialize Agent Swarm Execution", type="primary"):
-    if not final_api_key:
-        st.error("Cannot run execution without a valid Gemini API Key.")
+    if not keys_to_try:
+        st.error("Cannot run execution without a valid Gemini API Key string pool loaded.")
     elif not incident_input.strip():
         st.error("Please provide an incident description first.")
     else:
-        # 4. Defining Agents (Added max_iter=2 to severely cut request consumption)
-        legal_agent = Agent(
-            role='Chief Legal Compliance Officer',
-            goal='Analyze incidents for regulatory impact, legal compliance violations, and strict reporting deadlines.',
-            backstory='You are an expert corporate attorney specialized in industrial safety regulations, OSHA compliance, and legal liability mitigation.',
-            verbose=True,
-            allow_delegation=False,
-            llm=gemini_llm,
-            max_iter=2
-        )
+        result_text = None
+        execution_successful = False
+        
+        # Key Rotation Processing Loop
+        for index, active_key in enumerate(keys_to_try):
+            try:
+                # Assign active token index payload values down to runtime contexts
+                os.environ["GEMINI_API_KEY"] = active_key
+                
+                gemini_llm = LLM(
+                    model=f"gemini/{selected_model}",
+                    api_key=active_key,
+                    temperature=0.4
+                )
+                
+                # 4. Defining Agents
+                legal_agent = Agent(
+                    role='Chief Legal Compliance Officer',
+                    goal='Analyze incidents for regulatory impact, legal compliance violations, and strict reporting deadlines.',
+                    backstory='You are an expert corporate attorney specialized in industrial safety regulations, OSHA compliance, and legal liability mitigation.',
+                    verbose=True,
+                    allow_delegation=False,
+                    llm=gemini_llm,
+                    max_iter=2
+                )
 
-        hr_agent = Agent(
-            role='Director of HR and Employee Safety',
-            goal='Ensure employee welfare, outline immediate medical/insurance workflows, and guide management on worker protocols.',
-            backstory='You are a seasoned HR executive focused on workplace safety protocols and employee care.',
-            verbose=True,
-            allow_delegation=False,
-            llm=gemini_llm,
-            max_iter=2
-        )
+                hr_agent = Agent(
+                    role='Director of HR and Employee Safety',
+                    goal='Ensure employee welfare, outline immediate medical/insurance workflows, and guide management on worker protocols.',
+                    backstory='You are a seasoned HR executive focused on workplace safety protocols and employee care.',
+                    verbose=True,
+                    allow_delegation=False,
+                    llm=gemini_llm,
+                    max_iter=2
+                )
 
-        pr_agent = Agent(
-            role='VP of B2B Client Relations and PR Strategy',
-            goal='Draft diplomatic, accurate communications for corporate clients affected by downstream supply chain or service delays.',
-            backstory='You are a master communicator who handles high-stakes enterprise client relations.',
-            verbose=True,
-            allow_delegation=False,
-            llm=gemini_llm,
-            max_iter=2
-        )
+                pr_agent = Agent(
+                    role='VP of B2B Client Relations and PR Strategy',
+                    goal='Draft diplomatic, accurate communications for corporate clients affected by downstream supply chain or service delays.',
+                    backstory='You are a master communicator who handles high-stakes enterprise client relations.',
+                    verbose=True,
+                    allow_delegation=False,
+                    llm=gemini_llm,
+                    max_iter=2
+                )
 
-        orchestrator_agent = Agent(
-            role='Executive Incident Commander',
-            goal='Consolidate and synthesize the specialized reports from Legal, HR, and PR into a master executive brief.',
-            backstory='You are the crisis manager. You review departmental drafts and organize them into an execution report.',
-            verbose=True,
-            allow_delegation=True,
-            llm=gemini_llm,
-            max_iter=2
-        )
+                orchestrator_agent = Agent(
+                    role='Executive Incident Commander',
+                    goal='Consolidate and synthesize the specialized reports from Legal, HR, and PR into a master executive brief.',
+                    backstory='You are the crisis manager. You review departmental drafts and organize them into an execution report.',
+                    verbose=True,
+                    allow_delegation=True,
+                    llm=gemini_llm,
+                    max_iter=2
+                )
 
-        # 5. Defining Tasks
-        task_legal = Task(
-            description=f"Analyze this incident: {incident_input}. Identify potential regulatory infractions (e.g., OSHA). Note mandatory legal deadlines.",
-            expected_output="A structured Legal Vulnerability and Regulatory Compliance report.",
-            agent=legal_agent
-        )
+                # 5. Defining Tasks
+                task_legal = Task(
+                    description=f"Analyze this incident: {incident_input}. Identify potential regulatory infractions (e.g., OSHA). Note mandatory legal deadlines.",
+                    expected_output="A structured Legal Vulnerability and Regulatory Compliance report.",
+                    agent=legal_agent
+                )
 
-        task_hr = Task(
-            description=f"Analyze this incident: {incident_input}. Outline immediate next steps for HR, worker care, and supervisor checklists.",
-            expected_output="An HR Action Plan and Supervisor Safety Compliance Checklist.",
-            agent=hr_agent
-        )
+                task_hr = Task(
+                    description=f"Analyze this incident: {incident_input}. Outline immediate next steps for HR, worker care, and supervisor checklists.",
+                    expected_output="An HR Action Plan and Supervisor Safety Compliance Checklist.",
+                    agent=hr_agent
+                )
 
-        task_pr = Task(
-            description=f"Analyze this incident: {incident_input}. Draft a professional, reassuring B2B email notice to clients explaining adjustments without claiming liability.",
-            expected_output="A ready-to-send professional email draft.",
-            agent=pr_agent
-        )
+                task_pr = Task(
+                    description=f"Analyze this incident: {incident_input}. Draft a professional, reassuring B2B email notice to clients explaining adjustments without claiming liability.",
+                    expected_output="A ready-to-send professional email draft.",
+                    agent=pr_agent
+                )
 
-        task_orchestration = Task(
-            description="Gather outputs from Legal, HR, and PR. Synthesize them into one beautifully organized Executive Incident Brief containing clear Markdown headings.",
-            expected_output="A complete Markdown Executive Incident Brief summarizing sections from all departments.",
-            agent=orchestrator_agent
-        )
+                task_orchestration = Task(
+                    description="Gather outputs from Legal, HR, and PR. Synthesize them into one beautifully organized Executive Incident Brief containing clear Markdown headings.",
+                    expected_output="A complete Markdown Executive Incident Brief summarizing sections from all departments.",
+                    agent=orchestrator_agent
+                )
 
-        # 6. Kick off Swarm with Custom CSS Scanner Element
-        anim_container = st.empty()
-        anim_container.markdown("""
-            <div class='cyber-scanner'>
-                <h4 style='color: #00f2fe; margin: 0;'>🛡️ System Threat Analysis Active</h4>
-                <p style='color: #94a3b8; margin: 5px 0 0 0; font-size: 0.9rem;'>Orchestrating autonomous multi-agent swarm tasks across Legal, HR, and public relations divisions...</p>
-            </div>
-        """, unsafe_allow_html=True)
+                # 6. Kick off Swarm with Custom CSS Scanner Element UI layout bounds
+                anim_container = st.empty()
+                anim_container.markdown(f"""
+                    <div class='cyber-scanner'>
+                        <h4 style='color: #00f2fe; margin: 0;'>🛡️ System Threat Analysis Active (Key Profile #{index+1})</h4>
+                        <p style='color: #94a3b8; margin: 5px 0 0 0; font-size: 0.9rem;'>Orchestrating autonomous swarm tasks via {selected_model} tier node path routing...</p>
+                    </div>
+                """, unsafe_allow_html=True)
 
-        with st.spinner("Processing framework logic..."):
-            incident_crew = Crew(
-                agents=[legal_agent, hr_agent, pr_agent, orchestrator_agent],
-                tasks=[task_legal, task_hr, task_pr, task_orchestration],
-                process=Process.sequential, 
-                verbose=True
+                with st.spinner("Processing framework agent logic..."):
+                    incident_crew = Crew(
+                        agents=[legal_agent, hr_agent, pr_agent, orchestrator_agent],
+                        tasks=[task_legal, task_hr, task_pr, task_orchestration],
+                        process=Process.sequential, 
+                        verbose=True
+                    )
+                    crew_output = incident_crew.kickoff()
+                    result_text = getattr(crew_output, 'raw', str(crew_output))
+                
+                # Success flag exit condition toggle
+                anim_container.empty()
+                execution_successful = True
+                break
+                
+            except Exception as e:
+                error_str = str(e)
+                anim_container.empty()
+                
+                # Catch 429 quota exhaustion messages specifically
+                if "429" in error_str or "RESOURCE_EXHAUSTED" in error_style:
+                    st.warning(f"⚠️ Key Profile {index+1} hit rate thresholds. Automatically shifting connection lanes...")
+                    continue
+                else:
+                    st.error(f"Execution stop fault caught: {error_str}")
+                    break
+        else:
+            st.error("❌ All provided Gemini API token key structures have completely exhausted their available metric profiles. Please update settings keys strings.")
+            
+        # 7. Rendering final premium dashboard view on completion break condition tracking
+        if result_text:
+            st.success("✅ Agent Swarm successfully completed crisis workflow execution!")
+            st.markdown("### 📋 Generated Executive Summary Dashboard")
+            
+            st.markdown(f"<div class='report-box'>", unsafe_allow_html=True)
+            st.markdown(result_text)
+            st.markdown("</div>", unsafe_allow_html=True)
+            
+            st.download_button(
+                label="📥 Download Executive Incident Brief (Markdown File)",
+                data=result_text,
+                file_name="Executive_Incident_Brief.md",
+                mime="text/markdown"
             )
-            crew_output = incident_crew.kickoff()
-            result_text = getattr(crew_output, 'raw', str(crew_output))
-        
-        # Clear the scanner once complete
-        anim_container.empty()
-
-        # 7. Rendering final premium dashboard view
-        st.success("✅ Agent Swarm successfully completed crisis workflow execution!")
-        st.markdown("### 📋 Generated Executive Summary Dashboard")
-        
-        st.markdown(f"<div class='report-box'>", unsafe_allow_html=True)
-        st.markdown(result_text)
-        st.markdown("</div>", unsafe_allow_html=True)
-        
-        st.download_button(
-            label="📥 Download Executive Incident Brief (Markdown File)",
-            data=result_text,
-            file_name="Executive_Incident_Brief.md",
-            mime="text/markdown"
-        )
