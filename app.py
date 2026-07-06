@@ -92,7 +92,7 @@ st.write("Input a high-risk industry incident below. Our specialized AI agent sw
 # 2. Sidebar Configurations for Gemini
 st.sidebar.header("🔑 Configuration")
 
-# Add a model selector dropdown so you can instantly switch tiers if one throws an account error
+# Add a model selector dropdown
 selected_model = st.sidebar.selectbox(
     "Select LLM Tier Group",
     ["gemini-2.5-flash", "gemini-1.5-flash"],
@@ -116,12 +116,12 @@ gemini_llm = None
 if not final_api_key:
     st.info("Please enter your Gemini API Key in the sidebar to activate the agents.")
 else:
-    # Set environment variables explicitly to ensure LiteLLM multi-threading passes key down correctly
+    # Set environment variables explicitly to ensure multi-threading passes key correctly
     os.environ["GEMINI_API_KEY"] = final_api_key
     
-    # Initialize the Gemini Model using the dynamically selected tier dropdown
+    # Initialize the Gemini Model using the dynamically selected tier with mandatory provider prefix
     gemini_llm = LLM(
-        model=selected_model,
+        model=f"gemini/{selected_model}",
         api_key=final_api_key,
         temperature=0.4
     )
@@ -177,7 +177,7 @@ if st.button("🔥 Initialize Agent Swarm Execution", type="primary"):
             llm=gemini_llm
         )
 
-        # 5. Defining Tasks (Unwrapped variable strings to prevent 400 ClientErrors)
+        # 5. Defining Tasks
         task_legal = Task(
             description=f"Analyze this incident: {incident_input}. Identify potential regulatory infractions (e.g., OSHA). Note mandatory legal deadlines.",
             expected_output="A structured Legal Vulnerability and Regulatory Compliance report.",
