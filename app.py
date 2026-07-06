@@ -1,14 +1,28 @@
 import streamlit as st
 from crewai import Agent, Task, Crew, Process, LLM
+import requests
+from streamlit_lottie import st_lottie
 
 # 1. High-End Page Configuration & Premium Cyberpunk/Dark Styling
 st.set_page_config(page_title="OmniCompliance AI", page_icon="🛡️", layout="wide")
+
+def load_lottieurl(url: str):
+    try:
+        r = requests.get(url)
+        if r.status_code != 200:
+            return None
+        return r.json()
+    except Exception:
+        return None
+
+# Load an aesthetic, premium high-end tech radar animation for the AI swarm execution
+lottie_ai_scanner = load_lottieurl("https://lottie.host/8b7d41f7-e435-44cb-bf63-5489069fe5a7/4tZ6Hq7pQ4.json")
 
 # Premium CSS Injection for high-end animations and layout enhancements
 st.markdown("""
     <style>
     /* Global Background and Typography Smoothing */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght=300;400;600;700&display=swap');
     
     html, body, [data-testid="stAppViewContainer"] {
         font-family: 'Inter', sans-serif;
@@ -201,6 +215,8 @@ if st.button("🔥 Initialize Agent Swarm Execution", type="primary"):
 
         # 6. Kick off the Swarm Execution
         with st.spinner("🕵️ Agents are collaborating, verifying details, and generating legal/HR frameworks... Please wait..."):
+            if lottie_ai_scanner:
+                st_lottie(lottie_ai_scanner, height=240, key="ai_processing")
             
             # Assemble the Crew
             incident_crew = Crew(
