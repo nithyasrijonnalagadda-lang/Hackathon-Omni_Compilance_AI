@@ -140,14 +140,15 @@ if st.button("🔥 Initialize Agent Swarm Execution", type="primary"):
     elif not incident_input.strip():
         st.error("Please provide an incident description first.")
     else:
-        # 4. Defining Agents
+        # 4. Defining Agents (Added max_iter=2 to severely cut request consumption)
         legal_agent = Agent(
             role='Chief Legal Compliance Officer',
             goal='Analyze incidents for regulatory impact, legal compliance violations, and strict reporting deadlines.',
             backstory='You are an expert corporate attorney specialized in industrial safety regulations, OSHA compliance, and legal liability mitigation.',
             verbose=True,
             allow_delegation=False,
-            llm=gemini_llm
+            llm=gemini_llm,
+            max_iter=2
         )
 
         hr_agent = Agent(
@@ -156,7 +157,8 @@ if st.button("🔥 Initialize Agent Swarm Execution", type="primary"):
             backstory='You are a seasoned HR executive focused on workplace safety protocols and employee care.',
             verbose=True,
             allow_delegation=False,
-            llm=gemini_llm
+            llm=gemini_llm,
+            max_iter=2
         )
 
         pr_agent = Agent(
@@ -165,7 +167,8 @@ if st.button("🔥 Initialize Agent Swarm Execution", type="primary"):
             backstory='You are a master communicator who handles high-stakes enterprise client relations.',
             verbose=True,
             allow_delegation=False,
-            llm=gemini_llm
+            llm=gemini_llm,
+            max_iter=2
         )
 
         orchestrator_agent = Agent(
@@ -174,7 +177,8 @@ if st.button("🔥 Initialize Agent Swarm Execution", type="primary"):
             backstory='You are the crisis manager. You review departmental drafts and organize them into an execution report.',
             verbose=True,
             allow_delegation=True,
-            llm=gemini_llm
+            llm=gemini_llm,
+            max_iter=2
         )
 
         # 5. Defining Tasks
