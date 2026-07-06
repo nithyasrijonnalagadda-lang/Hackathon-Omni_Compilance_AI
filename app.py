@@ -1,24 +1,8 @@
 import streamlit as st
 from crewai import Agent, Task, Crew, Process, LLM
-import requests
-from streamlit_lottie import st_lottie
 
 # 1. High-End Page Configuration & Premium Cyberpunk/Dark Styling
 st.set_page_config(page_title="OmniCompliance AI", page_icon="🛡️", layout="wide")
-
-def load_lottieurl(url: str):
-    try:
-        # Using a highly reliable, heavily cached public Lottie JSON URL
-        r = requests.get(url, timeout=5)
-        if r.status_code == 200:
-            return r.json()
-    except Exception:
-        pass
-    return None
-
-# Aesthetic, premium data-scanning/shield loop animation
-lottie_url = "https://assets10.lottiefiles.com/packages/lf20_5tl1vbyu.json"
-lottie_ai_scanner = load_lottieurl(lottie_url)
 
 # Aggressive CSS Injection - Overriding Streamlit's core layout framework directly
 st.markdown("""
@@ -56,7 +40,30 @@ st.markdown("""
         font-size: 1rem !important;
     }
     
-    /* Premium Glassomorphic Result Box with glowing accent link border */
+    /* Custom High-End Scanning Animation Effect */
+    .cyber-scanner {
+        padding: 20px;
+        background: rgba(0, 242, 254, 0.05);
+        border: 1px dashed #00f2fe;
+        border-radius: 12px;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+    .cyber-scanner::after {
+        content: '';
+        display: block;
+        position: absolute;
+        left: 0; right: 0; top: 0; bottom: 0;
+        background: linear-gradient(to bottom, rgba(0,242,254,0) 0%, rgba(0,242,254,0.15) 50%, rgba(0,242,254,0) 100%);
+        animation: scan 2s linear infinite;
+    }
+    @keyframes scan {
+        0% { transform: translateY(-100%); }
+        100% { transform: translateY(100%); }
+    }
+    
+    /* Premium Glassomorphic Result Box */
     .report-box { 
         padding: 35px; 
         border-radius: 18px; 
@@ -179,16 +186,16 @@ if st.button("🔥 Initialize Agent Swarm Execution", type="primary"):
             agent=orchestrator_agent
         )
 
-        # 6. Kick off the Swarm Execution with Visible Animation Containers
-        # Place the loading animation clearly on the main layout page layout block
-        anim_container = st.container()
-        with anim_container:
-            if lottie_ai_scanner:
-                st_lottie(lottie_ai_scanner, height=250, key="swarm_animation")
-            else:
-                st.warning("⚠️ High-end animation loading fallback applied. Processing data context...")
+        # 6. Kick off Swarm with Custom CSS Scanner Element
+        anim_container = st.empty()
+        anim_container.markdown("""
+            <div class='cyber-scanner'>
+                <h4 style='color: #00f2fe; margin: 0;'>🛡️ System Threat Analysis Active</h4>
+                <p style='color: #94a3b8; margin: 5px 0 0 0; font-size: 0.9rem;'>Orchestrating autonomous multi-agent swarm tasks across Legal, HR, and public relations divisions...</p>
+            </div>
+        """, unsafe_allow_html=True)
 
-        with st.spinner("🕵️ Swarm Agents are actively collaborating, generating operational frameworks..."):
+        with st.spinner("Processing framework logic..."):
             incident_crew = Crew(
                 agents=[legal_agent, hr_agent, pr_agent, orchestrator_agent],
                 tasks=[task_legal, task_hr, task_pr, task_orchestration],
@@ -198,7 +205,7 @@ if st.button("🔥 Initialize Agent Swarm Execution", type="primary"):
             crew_output = incident_crew.kickoff()
             result_text = getattr(crew_output, 'raw', str(crew_output))
         
-        # Clear the animation placeholder once execution is complete
+        # Clear the scanner once complete
         anim_container.empty()
 
         # 7. Rendering final premium dashboard view
