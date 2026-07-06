@@ -1,25 +1,92 @@
 import streamlit as st
 from crewai import Agent, Task, Crew, Process, LLM
 
-# 1. Page Configuration & Styling
+# 1. High-End Page Configuration & Premium Cyberpunk/Dark Styling
 st.set_page_config(page_title="OmniCompliance AI", page_icon="🛡️", layout="wide")
 
+# Premium CSS Injection for high-end animations and layout enhancements
 st.markdown("""
     <style>
-    .report-box { 
-        padding: 25px; 
-        border-radius: 10px; 
-        background-color: #f8f9fa; 
-        border-left: 5px solid #007bff; 
-        margin-bottom: 20px; 
-        color: #333333; 
+    /* Global Background and Typography Smoothing */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+    
+    html, body, [data-testid="stAppViewContainer"] {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+        color: #f8fafc;
     }
-    .report-box h1, .report-box h2, .report-box h3 { color: #111111; }
+    
+    /* Elegant Sidebar Customization */
+    [data-testid="stSidebar"] {
+        background-color: rgba(15, 23, 42, 0.8) !important;
+        backdrop-filter: blur(12px);
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    /* Glowing Title Animation */
+    .hero-title {
+        font-size: 3rem !important;
+        font-weight: 700;
+        background: linear-gradient(45deg, #38bdf8, #818cf8, #c084fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 5px;
+        animation: fadeIn 1.5s ease-in-out;
+    }
+    
+    .hero-subtitle {
+        color: #94a3b8;
+        font-size: 1.25rem;
+        margin-bottom: 25px;
+        font-weight: 300;
+    }
+
+    /* Premium Glassomorphic Dashboard Report Box with subtle pulse glow */
+    .report-box { 
+        padding: 30px; 
+        border-radius: 16px; 
+        background: rgba(30, 41, 59, 0.4); 
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.08); 
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        margin-top: 25px;
+        margin-bottom: 25px; 
+        color: #e2e8f0;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .report-box:hover {
+        transform: translateY(-4px);
+        border-color: rgba(99, 102, 241, 0.4);
+        box-shadow: 0 15px 40px rgba(99, 102, 241, 0.15);
+    }
+
+    /* Target headers inside markdown outputs to look sharp */
+    .report-box h1, .report-box h2, .report-box h3 { 
+        color: #38bdf8 !important; 
+        font-weight: 600;
+        margin-top: 15px;
+    }
+    
+    /* Custom Styling for interactive elements and form fields */
+    div[data-testid="stForm"] {
+        background: rgba(15, 23, 42, 0.3);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    /* Smooth fade-in animation keyframe */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
     </style>
 """, unsafe_allow_html=True)
 
-st.title("🛡️ OmniCompliance AI")
-st.subheader("Autonomous Multi-Agent Incident Response & Compliance Orchestrator")
+# Render Header UI with high-end text gradients
+st.markdown("<h1 class='hero-title'>🛡️ OmniCompliance AI</h1>", unsafe_allow_html=True)
+st.markdown("<p class='hero-subtitle'>Autonomous Multi-Agent Incident Response &amp; Compliance Orchestrator</p>", unsafe_allow_html=True)
 st.write("Input a high-risk industry incident below. Our specialized AI agent swarm will handle legal compliance, HR procedures, and client communication simultaneously.")
 
 # 2. Sidebar Configurations for Gemini
@@ -153,7 +220,7 @@ if st.button("🔥 Initialize Agent Swarm Execution", type="primary"):
         st.success("✅ Agent Swarm successfully executed and resolved the workflow!")
         st.markdown("### 📋 Generated Executive Summary Dashboard")
         
-        # Using st.markdown inside our styled box wrapper to make sure text prints natively
+        # Using st.markdown inside our premium styled box wrapper
         st.markdown(f"<div class='report-box'>", unsafe_allow_html=True)
         st.markdown(result_text)
         st.markdown("</div>", unsafe_allow_html=True)
