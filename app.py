@@ -99,23 +99,21 @@ selected_model = st.sidebar.selectbox(
     index=0
 )
 
-# Parse multiple hidden keys from the background secrets string splitter setup
-backend_raw_keys = st.secrets.get("GEMINI_API_KEY", "")
-backend_keys_list = [k.strip() for k in backend_secret_key.split(",") if k.strip()] if isinstance(backend_secret_key, str) else []
+# Fetch hidden keys string from your Streamlit Cloud background settings
+backend_secret_key = st.secrets.get("GEMINI_API_KEY", "")
 
 # Let users enter a key, but default fallback to active backend cluster indicators
 api_key_input = st.sidebar.text_input(
     "Enter Gemini API Key (Optional for Judges)", 
     type="password",
-    placeholder=f"Loaded {len(backend_secret_key)} deployment keys..." if backend_secret_key else ""
+    placeholder="Using backend deployment key pool..." if backend_secret_key else ""
 )
 
-# Assemble final key tracking list array structure
+# Assemble final key tracking list array structure dynamically
 keys_to_try = []
 if api_key_input.strip():
     keys_to_try = [api_key_input.strip()]
 elif isinstance(backend_secret_key, str) and backend_secret_key.strip():
-    # Fallback to comma split lists
     keys_to_try = [k.strip() for k in backend_secret_key.split(",") if k.strip()]
 
 if not keys_to_try:
@@ -245,7 +243,7 @@ if st.button("🔥 Initialize Agent Swarm Execution", type="primary"):
                 anim_container.empty()
                 
                 # Catch 429 quota exhaustion messages specifically
-                if "429" in error_str or "RESOURCE_EXHAUSTED" in error_style:
+                if "429" in error_str or "RESOURCE_EXHAUSTED" in error_str:
                     st.warning(f"⚠️ Key Profile {index+1} hit rate thresholds. Automatically shifting connection lanes...")
                     continue
                 else:
@@ -255,7 +253,7 @@ if st.button("🔥 Initialize Agent Swarm Execution", type="primary"):
             st.error("❌ All provided Gemini API token key structures have completely exhausted their available metric profiles. Please update settings keys strings.")
             
         # 7. Rendering final premium dashboard view on completion break condition tracking
-        if result_text:
+        if execution_successful and result_text:
             st.success("✅ Agent Swarm successfully completed crisis workflow execution!")
             st.markdown("### 📋 Generated Executive Summary Dashboard")
             
