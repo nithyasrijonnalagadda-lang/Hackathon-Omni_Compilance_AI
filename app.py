@@ -1,5 +1,6 @@
 import streamlit as st
 from crewai import Agent, Task, Crew, Process, LLM
+import os
 
 # 1. High-End Page Configuration & Premium Cyberpunk/Dark Styling
 st.set_page_config(page_title="OmniCompliance AI", page_icon="🛡️", layout="wide")
@@ -104,6 +105,10 @@ gemini_llm = None
 if not final_api_key:
     st.info("Please enter your Gemini API Key in the sidebar to activate the agents.")
 else:
+    # Set environment variables explicitly to ensure LiteLLM multi-threading passes key down correctly
+    os.environ["GEMINI_API_KEY"] = final_api_key
+    
+    # Initialize the Gemini Model using CrewAI's LLM class
     gemini_llm = LLM(
         model="gemini/gemini-2.5-flash",
         api_key=final_api_key,
@@ -161,21 +166,21 @@ if st.button("🔥 Initialize Agent Swarm Execution", type="primary"):
             llm=gemini_llm
         )
 
-        # 5. Defining Tasks
+        # 5. Defining Tasks (Unwrapped variable strings to prevent 400 ClientErrors)
         task_legal = Task(
-            description=f"Analyze this incident: '{incident_input}'. Identify potential regulatory infractions (e.g., OSHA). Note mandatory legal deadlines.",
+            description=f"Analyze this incident: {incident_input}. Identify potential regulatory infractions (e.g., OSHA). Note mandatory legal deadlines.",
             expected_output="A structured Legal Vulnerability and Regulatory Compliance report.",
             agent=legal_agent
         )
 
         task_hr = Task(
-            description=f"Analyze this incident: '{incident_input}'. Outline immediate next steps for HR, worker care, and supervisor checklists.",
+            description=f"Analyze this incident: {incident_input}. Outline immediate next steps for HR, worker care, and supervisor checklists.",
             expected_output="An HR Action Plan and Supervisor Safety Compliance Checklist.",
             agent=hr_agent
         )
 
         task_pr = Task(
-            description=f"Analyze this incident: '{incident_input}'. Draft a professional, reassuring B2B email notice to clients explaining adjustments without claiming liability.",
+            description=f"Analyze this incident: {incident_input}. Draft a professional, reassuring B2B email notice to clients explaining adjustments without claiming liability.",
             expected_output="A ready-to-send professional email draft.",
             agent=pr_agent
         )
