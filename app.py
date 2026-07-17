@@ -3,6 +3,7 @@ from crewai import Agent, Task, Crew, Process, LLM
 import os
 import pandas as pd
 import time
+import json
 
 # 1. High-End Page Configuration & Premium Cyberpunk/Dark Styling
 st.set_page_config(page_title="OmniCompliance AI | Control Center", page_icon="🛡️", layout="wide")
@@ -144,10 +145,29 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ==================== AUTHENTICATION INITIALIZATION ====================
-if "users_db" not in st.session_state:
-    st.session_state.users_db = {"admin": "admin123"}
+# ==================== SOVEREIGN FILE REGISTRY DATABASE ====================
+DB_FILE = "users_db.json"
 
+def load_users():
+    if os.path.exists(DB_FILE):
+        try:
+            with open(DB_FILE, "r") as f:
+                return json.load(f)
+        except Exception:
+            return {"admin": "admin123"}
+    return {"admin": "admin123"}
+
+def save_user(username, password):
+    users = load_users()
+    users[username] = password
+    try:
+        with open(DB_FILE, "w") as f:
+            json.dump(users, f, indent=4)
+        return True
+    except Exception:
+        return False
+
+# ==================== AUTHENTICATION INITIALIZATION ====================
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
@@ -165,6 +185,9 @@ if not st.session_state.authenticated:
     with center_col:
         auth_tab, register_tab = st.tabs(["🔒 Secure Authenticated Sign-In", "📝 Provision New Credentials"])
         
+        # Load up-to-date registered credentials from persistent storage mapping
+        current_registered_users = load_users()
+        
         with auth_tab:
             with st.container(border=True):
                 st.markdown("<h3 style='color: #00f2fe; margin-top: 0;'>Identity Verification</h3>", unsafe_allow_html=True)
@@ -173,7 +196,7 @@ if not st.session_state.authenticated:
                 
                 st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
                 if st.button("🔓 Access Command Infrastructure", type="primary", use_container_width=True):
-                    if login_user in st.session_state.users_db and st.session_state.users_db[login_user] == login_pass:
+                    if login_user in current_registered_users and current_registered_users[login_user] == login_pass:
                         st.session_state.authenticated = True
                         st.session_state.current_user = login_user
                         st.success("Access Granted. Synchronizing cluster matrices...")
@@ -193,13 +216,15 @@ if not st.session_state.authenticated:
                 if st.button("🧬 Provision Sovereign Account", use_container_width=True):
                     if not reg_user.strip() or not reg_pass.strip():
                         st.error("Provisioning Aborted: Credentials cannot be empty.")
-                    elif reg_user in st.session_state.users_db:
+                    elif reg_user in current_registered_users:
                         st.error("Provisioning Aborted: Identity alias already registered.")
                     elif reg_pass != reg_confirm:
                         st.error("Provisioning Aborted: Passkey verification mismatch.")
                     else:
-                        st.session_state.users_db[reg_user] = reg_pass
-                        st.success("Identity Provisioned! Switch tab to sign-in.")
+                        if save_user(reg_user, reg_pass):
+                            st.success("Identity Provisioned securely to local ledger storage! Switch tab to sign-in.")
+                        else:
+                            st.error("System Error: IO Ledger failure writing credentials.")
 
 else:
     # ==================== PROTECTED SYSTEM WORKSPACE ====================
