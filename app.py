@@ -338,15 +338,29 @@ with tab1:
                 # --- Multi-Format Export Matrix Section ---
                 st.markdown("#### 📥 Export Sovereign Incident Assets")
                 
-                # 1. Plain Text Formatting Conversion
+                # 1. Pure Python Plain Text Formatting Conversion (No External Libs)
                 plain_text = result_text.replace("#", "").replace("**", "").replace("`", "")
                 
-                # 2. Portable Web HTML Component Scaffold
-                import markdown
-                try:
-                    html_content = markdown.markdown(result_text)
-                except Exception:
-                    html_content = result_text.replace("\n", "<br>")
+                # 2. Pure Python Markdown-to-HTML Conversion Scaffold (Zero Dependency)
+                html_content = ""
+                for line in result_text.split('\n'):
+                    stripped = line.strip()
+                    if stripped.startswith('### '):
+                        html_content += f"<h3>{stripped[4:]}</h3>\n"
+                    elif stripped.startswith('## '):
+                        html_content += f"<h2>{stripped[3:]}</h2>\n"
+                    elif stripped.startswith('# '):
+                        html_content += f"<h1>{stripped[2:]}</h1>\n"
+                    elif stripped.startswith('* ') or stripped.startswith('- '):
+                        html_content += f"<li>{stripped[2:]}</li>\n"
+                    elif stripped:
+                        # Convert simple bold matches manually
+                        temp_line = stripped
+                        while "**" in temp_line:
+                            temp_line = temp_line.replace("**", "<strong>", 1).replace("**", "</strong>", 1)
+                        html_content += f"<p>{temp_line}</p>\n"
+                    else:
+                        html_content += "<br>\n"
                 
                 html_document = f"""<!DOCTYPE html>
                 <html>
@@ -373,6 +387,7 @@ with tab1:
                         h1, h2, h3 {{ color: #0f172a; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }}
                         code {{ background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: monospace; }}
                         pre {{ background: #f1f5f9; padding: 15px; border-radius: 6px; overflow-x: auto; }}
+                        li {{ margin-bottom: 6px; color: #334155; }}
                     </style>
                 </head>
                 <body>
