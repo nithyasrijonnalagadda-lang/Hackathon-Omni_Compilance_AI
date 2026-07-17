@@ -128,16 +128,12 @@ st.markdown("""
         border-radius: 12px !important;
     }
     
-    /* Target custom container elements securely */
-    div[data-testid="stVerticalBlockBorderWrapper"]:has(div[data-testid="stCustomComponentV1"]) {
-        max-width: 520px;
-        margin: 30px auto !important;
-    }
-    .auth-box-layout {
+    /* Target native containers inside the auth workflow to give them a card finish */
+    div[data-testid="stVerticalBlockBorderWrapper"] {
         background: rgba(15, 23, 42, 0.6) !important;
         border: 1px solid rgba(0, 242, 254, 0.25) !important;
-        padding: 30px !important;
         border-radius: 16px !important;
+        padding: 24px !important;
         box-shadow: 0 15px 35px rgba(0,0,0,0.5) !important;
     }
     </style>
@@ -158,20 +154,20 @@ if not st.session_state.authenticated:
     st.markdown("<h1 style='text-align: center; color: #00f2fe; font-family: sans-serif; margin-top: 50px;'>🛡️ OMNICOMPLIANCE CORE</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: center; color: #94a3b8; margin-bottom: 30px;'>Secure Enterprise Sovereign Identity Gateway</p>", unsafe_allow_html=True)
     
-    # Restrict total column spans to center the structural fields neatly
+    # Centers the operational card cleanly using dynamic spatial columns
     _, center_col, _ = st.columns([1, 2, 1])
     
     with center_col:
         auth_tab, register_tab = st.tabs(["🔒 Secure Authenticated Sign-In", "📝 Provision New Credentials"])
         
         with auth_tab:
-            # Native container with class anchoring for layout containment
-            with st.container(border=False):
-                st.markdown("<div class='auth-box-layout'>", unsafe_allow_html=True)
+            # Native container styled globally via CSS handles element placement natively
+            with st.container(border=True):
+                st.markdown("<h3 style='color: #00f2fe; margin-top: 0;'>Identity Verification</h3>", unsafe_allow_html=True)
                 login_user = st.text_input("Identity Alias (Username)", key="login_user_input")
                 login_pass = st.text_input("Security Passkey (Password)", type="password", key="login_pass_input")
                 
-                st.markdown("<br>", unsafe_allow_html=True)
+                st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
                 if st.button("🔓 Access Command Infrastructure", type="primary", use_container_width=True):
                     if login_user in st.session_state.users_db and st.session_state.users_db[login_user] == login_pass:
                         st.session_state.authenticated = True
@@ -181,16 +177,15 @@ if not st.session_state.authenticated:
                         st.rerun()
                     else:
                         st.error("Authentication Rejected: Invalid identity tokens.")
-                st.markdown("</div>", unsafe_allow_html=True)
             
         with register_tab:
-            with st.container(border=False):
-                st.markdown("<div class='auth-box-layout'>", unsafe_allow_html=True)
+            with st.container(border=True):
+                st.markdown("<h3 style='color: #00f2fe; margin-top: 0;'>Credential Provisioning</h3>", unsafe_allow_html=True)
                 reg_user = st.text_input("Desired Identity Alias", key="reg_user_input")
                 reg_pass = st.text_input("Set Security Passkey", type="password", key="reg_pass_input")
                 reg_confirm = st.text_input("Confirm Security Passkey", type="password", key="reg_confirm_input")
                 
-                st.markdown("<br>", unsafe_allow_html=True)
+                st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
                 if st.button("🧬 Provision Sovereign Account", use_container_width=True):
                     if not reg_user.strip() or not reg_pass.strip():
                         st.error("Provisioning Aborted: Credentials cannot be empty.")
@@ -201,7 +196,6 @@ if not st.session_state.authenticated:
                     else:
                         st.session_state.users_db[reg_user] = reg_pass
                         st.success("Identity Provisioned! Switch tab to sign-in.")
-                st.markdown("</div>", unsafe_allow_html=True)
 
 else:
     # ==================== PROTECTED SYSTEM WORKSPACE ====================
