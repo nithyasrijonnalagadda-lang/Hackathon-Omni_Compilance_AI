@@ -127,21 +127,24 @@ st.markdown("""
         color: #f8fafc !important;
         border-radius: 12px !important;
     }
-    .auth-card {
-        background: rgba(15, 23, 42, 0.6);
-        border: 1px solid rgba(0, 242, 254, 0.2);
-        padding: 40px;
-        border-radius: 16px;
-        max-width: 500px;
-        margin: 60px auto;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    
+    /* Target custom container elements securely */
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(div[data-testid="stCustomComponentV1"]) {
+        max-width: 520px;
+        margin: 30px auto !important;
+    }
+    .auth-box-layout {
+        background: rgba(15, 23, 42, 0.6) !important;
+        border: 1px solid rgba(0, 242, 254, 0.25) !important;
+        padding: 30px !important;
+        border-radius: 16px !important;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.5) !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
 # ==================== AUTHENTICATION INITIALIZATION ====================
 if "users_db" not in st.session_state:
-    # Pre-seeded master admin credentials for immediate demo utility
     st.session_state.users_db = {"admin": "admin123"}
 
 if "authenticated" not in st.session_state:
@@ -155,46 +158,53 @@ if not st.session_state.authenticated:
     st.markdown("<h1 style='text-align: center; color: #00f2fe; font-family: sans-serif; margin-top: 50px;'>🛡️ OMNICOMPLIANCE CORE</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: center; color: #94a3b8; margin-bottom: 30px;'>Secure Enterprise Sovereign Identity Gateway</p>", unsafe_allow_html=True)
     
-    auth_tab, register_tab = st.tabs(["🔒 Secure Authenticated Sign-In", "📝 Provision New Credentials"])
+    # Restrict total column spans to center the structural fields neatly
+    _, center_col, _ = st.columns([1, 2, 1])
     
-    with auth_tab:
-        st.markdown("<div class='auth-card'>", unsafe_allow_html=True)
-        login_user = st.text_input("Identity Alias (Username)", key="login_user_input")
-        login_pass = st.text_input("Security Passkey (Password)", type="password", key="login_pass_input")
+    with center_col:
+        auth_tab, register_tab = st.tabs(["🔒 Secure Authenticated Sign-In", "📝 Provision New Credentials"])
         
-        if st.button("🔓 Access Command Infrastructure", type="primary", use_container_width=True):
-            if login_user in st.session_state.users_db and st.session_state.users_db[login_user] == login_pass:
-                st.session_state.authenticated = True
-                st.session_state.current_user = login_user
-                st.success("Access Granted. Synchronizing cluster matrices...")
-                time.sleep(1.0)
-                st.rerun()
-            else:
-                st.error("Authentication Rejected: Invalid identity tokens.")
-        st.markdown("</div>", unsafe_allow_html=True)
-        
-    with register_tab:
-        st.markdown("<div class='auth-card'>", unsafe_allow_html=True)
-        reg_user = st.text_input("Desired Identity Alias", key="reg_user_input")
-        reg_pass = st.text_input("Set Security Passkey", type="password", key="reg_pass_input")
-        reg_confirm = st.text_input("Confirm Security Passkey", type="password", key="reg_confirm_input")
-        
-        if st.button("🧬 Provision Sovereign Account", use_container_width=True):
-            if not reg_user.strip() or not reg_pass.strip():
-                st.error("Provisioning Aborted: Credentials cannot be empty.")
-            elif reg_user in st.session_state.users_db:
-                st.error("Provisioning Aborted: Identity alias already registered.")
-            elif reg_pass != reg_confirm:
-                st.error("Provisioning Aborted: Passkey verification mismatch.")
-            else:
-                st.session_state.users_db[reg_user] = reg_pass
-                st.success("Identity Provisioned! Switch to the Sign-In tab to authenticate.")
-        st.markdown("</div>", unsafe_allow_html=True)
+        with auth_tab:
+            # Native container with class anchoring for layout containment
+            with st.container(border=False):
+                st.markdown("<div class='auth-box-layout'>", unsafe_allow_html=True)
+                login_user = st.text_input("Identity Alias (Username)", key="login_user_input")
+                login_pass = st.text_input("Security Passkey (Password)", type="password", key="login_pass_input")
+                
+                st.markdown("<br>", unsafe_allow_html=True)
+                if st.button("🔓 Access Command Infrastructure", type="primary", use_container_width=True):
+                    if login_user in st.session_state.users_db and st.session_state.users_db[login_user] == login_pass:
+                        st.session_state.authenticated = True
+                        st.session_state.current_user = login_user
+                        st.success("Access Granted. Synchronizing cluster matrices...")
+                        time.sleep(1.0)
+                        st.rerun()
+                    else:
+                        st.error("Authentication Rejected: Invalid identity tokens.")
+                st.markdown("</div>", unsafe_allow_html=True)
+            
+        with register_tab:
+            with st.container(border=False):
+                st.markdown("<div class='auth-box-layout'>", unsafe_allow_html=True)
+                reg_user = st.text_input("Desired Identity Alias", key="reg_user_input")
+                reg_pass = st.text_input("Set Security Passkey", type="password", key="reg_pass_input")
+                reg_confirm = st.text_input("Confirm Security Passkey", type="password", key="reg_confirm_input")
+                
+                st.markdown("<br>", unsafe_allow_html=True)
+                if st.button("🧬 Provision Sovereign Account", use_container_width=True):
+                    if not reg_user.strip() or not reg_pass.strip():
+                        st.error("Provisioning Aborted: Credentials cannot be empty.")
+                    elif reg_user in st.session_state.users_db:
+                        st.error("Provisioning Aborted: Identity alias already registered.")
+                    elif reg_pass != reg_confirm:
+                        st.error("Provisioning Aborted: Passkey verification mismatch.")
+                    else:
+                        st.session_state.users_db[reg_user] = reg_pass
+                        st.success("Identity Provisioned! Switch tab to sign-in.")
+                st.markdown("</div>", unsafe_allow_html=True)
 
 else:
     # ==================== PROTECTED SYSTEM WORKSPACE ====================
-    
-    # Render Platform Headings and Top-Tier Telemetry Panels
     st.markdown("<h1 class='hero-title'>🛡️ OmniCompliance AI</h1>", unsafe_allow_html=True)
     st.markdown("<p style='color: #94a3b8; font-size: 1.25rem; margin-top:5px; margin-bottom: 30px;'>Autonomous Multi-Agent Crisis Infrastructure &amp; Orchestration Platform</p>", unsafe_allow_html=True)
 
@@ -219,9 +229,7 @@ else:
 
     backend_secret_key = st.secrets.get("GEMINI_API_KEY", "")
 
-    # Sidebar Infrastructure Management Engine
     st.sidebar.markdown(f"👤 **Operator:** `@{st.session_state.current_user}`")
-    
     st.sidebar.header("⚙️ Swarm Core Engine")
     selected_model = st.sidebar.selectbox(
         "Preferred LLM Base Tier",
@@ -409,10 +417,8 @@ else:
                     # --- Multi-Format Export Matrix Section ---
                     st.markdown("#### 📥 Export Sovereign Incident Assets")
                     
-                    # 1. Plain Text Manipulation Syntax Strip
                     plain_text = result_text.replace("#", "").replace("**", "").replace("`", "")
                     
-                    # 2. String Parser Structural Markdown-to-HTML Conversion
                     html_content = ""
                     for line in result_text.split('\n'):
                         stripped = line.strip()
