@@ -136,6 +136,11 @@ st.markdown("""
         padding: 24px !important;
         box-shadow: 0 15px 35px rgba(0,0,0,0.5) !important;
     }
+    
+    /* Zap the auto-generated header markdown anchor link icons from the gateway interface */
+    div[data-testid="stVerticalBlockBorderWrapper"] a {
+        display: none !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -161,7 +166,6 @@ if not st.session_state.authenticated:
         auth_tab, register_tab = st.tabs(["🔒 Secure Authenticated Sign-In", "📝 Provision New Credentials"])
         
         with auth_tab:
-            # Native container styled globally via CSS handles element placement natively
             with st.container(border=True):
                 st.markdown("<h3 style='color: #00f2fe; margin-top: 0;'>Identity Verification</h3>", unsafe_allow_html=True)
                 login_user = st.text_input("Identity Alias (Username)", key="login_user_input")
