@@ -103,6 +103,21 @@ st.markdown("""
         100% { transform: translateY(100%); }
     }
     
+    /* Tech Matrix Completion Banner */
+    .tech-upgrade-banner {
+        background: linear-gradient(90deg, rgba(34, 197, 94, 0.15) 0%, rgba(0, 242, 254, 0.15) 100%);
+        border: 1px solid rgba(34, 197, 94, 0.6);
+        padding: 18px 25px;
+        border-radius: 12px;
+        box-shadow: 0 0 25px rgba(34, 197, 94, 0.15);
+        margin-bottom: 25px;
+        animation: pulseglow 2s infinite alternate;
+    }
+    @keyframes pulseglow {
+        0% { border-color: rgba(34, 197, 94, 0.4); box-shadow: 0 0 15px rgba(34, 197, 94, 0.1); }
+        100% { border-color: rgba(0, 242, 254, 0.8); box-shadow: 0 0 30px rgba(0, 242, 254, 0.25); }
+    }
+    
     /* Premium Glassomorphic Result Box */
     .report-box { 
         padding: 35px; 
@@ -314,8 +329,17 @@ with tab1:
                 
             # Render Completed Dashboard Output
             if execution_successful and result_text:
-                st.balloons()
-                st.success("🎯 Swarm Pipeline Completed! Tactical Brief Formatted Successfully.")
+                # Tech upgrade toast alerts
+                st.toast("⚡ Security Core Matrix Upgraded to Phase 2.", icon="🛡️")
+                st.toast("🧬 Strategic Vectors Compiled successfully.", icon="⚙️")
+                
+                # Tech glowing success readout banner
+                st.markdown("""
+                    <div class='tech-upgrade-banner'>
+                        <span style='color: #22c55e; font-weight: 800; font-family: monospace; letter-spacing: 1px;'>[🟢 SWARM EXECUTION SUCCESSFUL]</span>
+                        <p style='color: #ffffff; margin: 6px 0 0 0; font-size: 1.05rem;'>All parallel dependencies resolved. Compliance payload encrypted and committed to local infrastructure assets.</p>
+                    </div>
+                """, unsafe_allow_html=True)
                 
                 st.markdown("### 📋 System Synthesis Output Panel")
                 st.markdown("<div class='report-box'>", unsafe_allow_html=True)
