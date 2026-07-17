@@ -2,6 +2,7 @@ import streamlit as st
 from crewai import Agent, Task, Crew, Process, LLM
 import os
 import pandas as pd
+import time
 
 # 1. High-End Page Configuration & Premium Cyberpunk/Dark Styling
 st.set_page_config(page_title="OmniCompliance AI | Control Center", page_icon="🛡️", layout="wide")
@@ -226,6 +227,7 @@ with tab1:
         else:
             result_text = None
             execution_successful = False
+            current_target_model = selected_model
             
             # Key Rotation Core Implementation Logic Loop
             for index, active_key in enumerate(keys_to_try):
@@ -233,7 +235,7 @@ with tab1:
                     os.environ["GEMINI_API_KEY"] = active_key
                     
                     gemini_llm = LLM(
-                        model=f"gemini/{selected_model}",
+                        model=f"gemini/{current_target_model}",
                         api_key=active_key,
                         temperature=0.35
                     )
@@ -297,7 +299,7 @@ with tab1:
                     anim_container.markdown(f"""
                         <div class='cyber-scanner'>
                             <h4 style='color: #00f2fe; margin: 0;'>🚀 Active Swarm Cluster: Matrix Routing Pipeline Initialized</h4>
-                            <p style='color: #94a3b8; margin: 6px 0 0 0; font-size: 0.95rem;'>Processing multi-agent subtasks concurrently on <b>{selected_model}</b> via credential block #{index+1}...</p>
+                            <p style='color: #94a3b8; margin: 6px 0 0 0; font-size: 0.95rem;'>Processing multi-agent subtasks concurrently on <b>{current_target_model}</b> via credential block #{index+1}...</p>
                         </div>
                     """, unsafe_allow_html=True)
 
@@ -318,25 +320,32 @@ with tab1:
                 except Exception as e:
                     error_str = str(e)
                     anim_container.empty()
-                    if "429" in error_str or "RESOURCE_EXHAUSTED" in error_str:
-                        st.warning(f"🔄 Connection Lane Exhaustion on Token Array {index+1}. Initiating backend context rotation sequence...")
+                    
+                    # CATCH 429 RATE LIMITS AND 503 SERVER SPIKES
+                    if any(indicator in error_str for indicator in ["429", "503", "RESOURCE_EXHAUSTED", "UNAVAILABLE"]):
+                        st.warning(f"🔄 Connection Interrupted on Token Array {index+1} ({current_target_model}). Initiating failover rotation sequence...")
+                        
+                        # Dynamic Model Downgrade Fallback Strategy to ensure the script doesn't stop
+                        if current_target_model == "gemini-2.5-flash":
+                            current_target_model = "gemini-1.5-flash"
+                            st.info("🧬 High demand detected. Dynamically falling back to resilient Gemini 1.5 Architecture Tier.")
+                        
+                        time.sleep(1) # Short grace pause
                         continue
                     else:
                         st.error(f"Critical Interrupt Caught: {error_str}")
                         break
             else:
-                st.error("❌ System Error: All background credential clusters have hit rate limits. Update parameters in configuration.")
+                st.error("❌ System Error: All background credential paths and structural model configurations have hit capacity restrictions. Re-execute the request or use an explicit manual token override.")
                 
             # Render Completed Dashboard Output
             if execution_successful and result_text:
-                # Tech upgrade toast alerts
                 st.toast("⚡ Security Core Matrix Upgraded to Phase 2.", icon="🛡️")
                 st.toast("🧬 Strategic Vectors Compiled successfully.", icon="⚙️")
                 
-                # Tech glowing success readout banner
-                st.markdown("""
+                st.markdown(f"""
                     <div class='tech-upgrade-banner'>
-                        <span style='color: #22c55e; font-weight: 800; font-family: monospace; letter-spacing: 1px;'>[🟢 SWARM EXECUTION SUCCESSFUL]</span>
+                        <span style='color: #22c55e; font-weight: 800; font-family: monospace; letter-spacing: 1px;'>[🟢 SWARM EXECUTION SUCCESSFUL VIA {current_target_model.upper()}]</span>
                         <p style='color: #ffffff; margin: 6px 0 0 0; font-size: 1.05rem;'>All parallel dependencies resolved. Compliance payload encrypted and committed to local infrastructure assets.</p>
                     </div>
                 """, unsafe_allow_html=True)
