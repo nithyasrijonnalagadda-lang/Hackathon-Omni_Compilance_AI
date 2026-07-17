@@ -7,7 +7,7 @@ import time
 # 1. High-End Page Configuration & Premium Cyberpunk/Dark Styling
 st.set_page_config(page_title="OmniCompliance AI | Control Center", page_icon="🛡️", layout="wide")
 
-# Advanced CSS Injection
+# Advanced CSS Injection - Custom Variables, Telemetry Grid, and Node Aesthetics
 st.markdown("""
     <style>
     .stApp {
@@ -199,7 +199,7 @@ with tab1:
             result_text = None
             execution_successful = False
             
-            # Setup an expandable live system log container to keep the UI clean
+            # Form clean log view window
             log_container = st.expander("🛠️ System Core Failover Analytics Matrix", expanded=True)
             
             model_fallback_pool = [selected_model, "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash-latest"]
@@ -213,7 +213,6 @@ with tab1:
                     
                 for index, active_key in enumerate(keys_to_try):
                     try:
-                        # Introduce a 2-second rate limit buffer before calling the agent workflow
                         log_container.info(f"⏳ Synchronizing network lanes to clear active concurrency caps...")
                         time.sleep(2.0)
                         
@@ -336,12 +335,82 @@ with tab1:
                 st.markdown(result_text)
                 st.markdown("</div>", unsafe_allow_html=True)
                 
-                st.download_button(
-                    label="📥 Download Sovereign Incident Vault Asset (.md)",
-                    data=result_text,
-                    file_name="OmniCompliance_Executive_Brief.md",
-                    mime="text/markdown"
-                )
+                # --- Multi-Format Export Matrix Section ---
+                st.markdown("#### 📥 Export Sovereign Incident Assets")
+                
+                # 1. Plain Text Formatting Conversion
+                plain_text = result_text.replace("#", "").replace("**", "").replace("`", "")
+                
+                # 2. Portable Web HTML Component Scaffold
+                import markdown
+                try:
+                    html_content = markdown.markdown(result_text)
+                except Exception:
+                    html_content = result_text.replace("\n", "<br>")
+                
+                html_document = f"""<!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <title>OmniCompliance AI - Executive Incident Brief</title>
+                    <style>
+                        body {{
+                            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                            line-height: 1.6;
+                            color: #1e293b;
+                            max-width: 800px;
+                            margin: 40px auto;
+                            padding: 0 20px;
+                            background-color: #f8fafc;
+                        }}
+                        .container {{
+                            background: #ffffff;
+                            padding: 40px;
+                            border-radius: 8px;
+                            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+                            border-top: 6px solid #00f2fe;
+                        }}
+                        h1, h2, h3 {{ color: #0f172a; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }}
+                        code {{ background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: monospace; }}
+                        pre {{ background: #f1f5f9; padding: 15px; border-radius: 6px; overflow-x: auto; }}
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        {html_content}
+                    </div>
+                </body>
+                </html>
+                """
+
+                dl_col1, dl_col2, dl_col3 = st.columns(3)
+                
+                with dl_col1:
+                    st.download_button(
+                        label="📄 Download Plain Text (.txt)",
+                        data=plain_text,
+                        file_name="OmniCompliance_Executive_Brief.txt",
+                        mime="text/plain",
+                        use_container_width=True
+                    )
+                
+                with dl_col2:
+                    st.download_button(
+                        label="🌐 Download Web Document (.html)",
+                        data=html_document,
+                        file_name="OmniCompliance_Executive_Brief.html",
+                        mime="text/html",
+                        use_container_width=True
+                    )
+                    
+                with dl_col3:
+                    st.download_button(
+                        label="💻 Download Developer Markdown (.md)",
+                        data=result_text,
+                        file_name="OmniCompliance_Executive_Brief.md",
+                        mime="text/markdown",
+                        use_container_width=True
+                    )
 
 # ==================== TAB 2: ARCHITECTURE BLUEPRINT ====================
 with tab2:
