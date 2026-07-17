@@ -1,6 +1,7 @@
 import streamlit as st
 from crewai import Agent, Task, Crew, Process, LLM
 import os
+import pandas as pd
 
 # 1. High-End Page Configuration & Premium Cyberpunk/Dark Styling
 st.set_page_config(page_title="OmniCompliance AI | Control Center", page_icon="🛡️", layout="wide")
@@ -104,13 +105,14 @@ st.markdown("""
     
     /* Premium Glassomorphic Result Box */
     .report-box { 
-        padding: 40px; 
-        border-radius: 20px; 
-        background: rgba(10, 15, 30, 0.6) !important; 
-        backdrop-filter: blur(30px);
-        border: 1px solid rgba(255, 255, 255, 0.08); 
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.1);
-        color: #e2e8f0 !important;
+        padding: 35px; 
+        border-radius: 18px; 
+        background: rgba(17, 24, 39, 0.5) !important; 
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.1); 
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.15);
+        color: #f1f5f9 !important;
     }
     .report-box h1, .report-box h2, .report-box h3 { 
         color: #00f2fe !important;
@@ -136,9 +138,9 @@ st.markdown("""
 
 # Main Dashboard Branding Header
 st.markdown("<h1 class='hero-title'>🛡️ OmniCompliance AI</h1>", unsafe_allow_html=True)
-st.markdown("<p style='color: #94a3b8; font-size: 1.25rem; margin-top:5px; margin-bottom: 30px;'>Autonomous Multi-Agent Crisis Infrastructure & Orchestration Platform</p>", unsafe_allow_html=True)
+st.markdown("<p style='color: #94a3b8; font-size: 1.25rem; margin-top:5px; margin-bottom: 30px;'>Autonomous Multi-Agent Crisis Infrastructure &amp; Orchestration Platform</p>", unsafe_allow_html=True)
 
-# --- FINALS FEATURE: Live Telemetry Command Strip ---
+# Live Telemetry Command Strip
 st.markdown("""
 <div class='kpi-container'>
     <div class='kpi-card'>
@@ -156,7 +158,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# --- FINALS FEATURE: Multi-Tab Control Matrix ---
+# Multi-Tab Control Matrix
 tab1, tab2, tab3 = st.tabs(["🚨 Incident Command Center", "📊 Swarm Node Topology", "🛡️ Compliance & Audit Vault"])
 
 # Fetch background cluster API structures safely
@@ -198,7 +200,7 @@ with tab1:
     # Context Pre-Analysis Panel
     if incident_input.strip():
         word_count = len(incident_input.split())
-        severity_label = "🔴 HIGH CRISIS THREAT" if any(x in incident_input.lower() for x in ["leak", "injured", "fire", "burn", "collapse", "hospital"]) else "🟡 ELEVATED RISK PROFILE"
+        severity_label = "🔴 HIGH CRISIS THREAT" if any(x in incident_input.lower() for x in ["leak", "injured", "fire", "burn", "collapse", "hospital", "overheated"]) else "🟡 ELEVATED RISK PROFILE"
         st.markdown(f"<p style='color:#94a3b8; font-size:0.9rem;'>Pre-Assessment Telemetry: <b>{word_count} words</b> | System Routing Matrix: <span style='color:#f43f5e;'><b>{severity_label}</b></span></p>", unsafe_allow_html=True)
 
     if st.button("🔥 Execute Enterprise Swarm Pipeline", type="primary"):
@@ -316,7 +318,7 @@ with tab1:
                 st.success("🎯 Swarm Pipeline Completed! Tactical Brief Formatted Successfully.")
                 
                 st.markdown("### 📋 System Synthesis Output Panel")
-                st.markdown(f"<div class='report-box'>", unsafe_allow_html=True)
+                st.markdown("<div class='report-box'>", unsafe_allow_html=True)
                 st.markdown(result_text)
                 st.markdown("</div>", unsafe_allow_html=True)
                 
@@ -355,7 +357,6 @@ with tab2:
         """, unsafe_allow_html=True)
         
     with col2:
-        # Structured ASCII/Text visualization of data mapping flow
         st.code("""
 [ Raw Text Incident Input ]
             │
@@ -371,15 +372,13 @@ with tab2:
                                                              [ Rendered Enterprise Dashboard UI ]
         """, language="text")
         
-        st.info("💡 Hackathon Detail: All sub-nodes utilize strict iteration caps (max_iter=2) and an automated error catching wrapper to handle high-concurrency requests safely without pipeline breakage.")
+        st.info("💡 Hackathon Detail: All sub-nodes utilize strict iteration caps (max_iter=2) and automated error-catching mechanics to rotate keys safely without breaking workflow continuity.")
 
 # ==================== TAB 3: AUDIT VAULT ====================
 with tab3:
     st.markdown("### 🗄️ Enterprise Incident Audit Ledger (Simulation)")
     st.write("Simulated ledger tracking secure historical incident briefs stored inside long-term organizational data lakes.")
     
-    # Showcase data organization structure to judges
-    import pandas as pd
     mock_ledger_data = pd.DataFrame({
         "Incident ID": ["OC-2026-8891", "OC-2026-7742", "OC-2026-1104"],
         "Timestamp": ["2026-07-15 09:30", "2026-06-12 14:10", "2026-05-01 23:45"],
@@ -387,211 +386,4 @@ with tab3:
         "Swarm Validation": ["Verified & Archived", "Verified & Archived", "Archived Audit Output"],
         "Risk Profile Tier": ["High", "Medium", "Low"]
     })
-    st.dataframe(mock_ledger_data, use_container_width=True)    @keyframes scan {
-        0% { transform: translateY(-100%); }
-        100% { transform: translateY(100%); }
-    }
-    
-    /* Premium Glassomorphic Result Box */
-    .report-box { 
-        padding: 35px; 
-        border-radius: 18px; 
-        background: rgba(17, 24, 39, 0.5) !important; 
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        border: 1px solid rgba(255, 255, 255, 0.1); 
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.15);
-        color: #f1f5f9 !important;
-    }
-    
-    .report-box h1, .report-box h2, .report-box h3 { 
-        color: #00f2fe !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        padding-bottom: 8px;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-# Render Custom Headings
-st.markdown("<h1 class='hero-title'>🛡️ OmniCompliance AI</h1>", unsafe_allow_html=True)
-st.markdown("<p style='color: #94a3b8; font-size: 1.2rem; margin-top:5px; margin-bottom: 25px;'>Autonomous Multi-Agent Incident Response &amp; Compliance Orchestrator</p>", unsafe_allow_html=True)
-st.write("Input a high-risk industry incident below. Our specialized AI agent swarm will handle legal compliance, HR procedures, and client communication simultaneously.")
-
-# 2. Sidebar Configurations for Gemini
-st.sidebar.header("🔑 Configuration")
-
-# Add a model selector dropdown
-selected_model = st.sidebar.selectbox(
-    "Select LLM Tier Group",
-    ["gemini-2.5-flash", "gemini-1.5-flash"],
-    index=0
-)
-
-# Fetch hidden keys string from your Streamlit Cloud background settings
-backend_secret_key = st.secrets.get("GEMINI_API_KEY", "")
-
-# Let users enter a key, but default fallback to active backend cluster indicators
-api_key_input = st.sidebar.text_input(
-    "Enter Gemini API Key (Optional for Judges)", 
-    type="password",
-    placeholder="Using backend deployment key pool..." if backend_secret_key else ""
-)
-
-# Assemble final key tracking list array structure dynamically
-keys_to_try = []
-if api_key_input.strip():
-    keys_to_try = [api_key_input.strip()]
-elif isinstance(backend_secret_key, str) and backend_secret_key.strip():
-    keys_to_try = [k.strip() for k in backend_secret_key.split(",") if k.strip()]
-
-if not keys_to_try:
-    st.sidebar.info("Please enter your Gemini API Key in the sidebar or connect backend keys to activate the swarm.")
-
-# 3. User Input Section
-st.markdown("### 🚨 Step 1: Report the Incident")
-incident_input = st.text_area(
-    "Describe the incident in plain text (Include location, what happened, who was involved, and severity):",
-    placeholder="Example: At 10:30 AM in Manufacturing Plant Floor B, Sensor 4B overheated...",
-    height=150
-)
-
-if st.button("🔥 Initialize Agent Swarm Execution", type="primary"):
-    if not keys_to_try:
-        st.error("Cannot run execution without a valid Gemini API Key string pool loaded.")
-    elif not incident_input.strip():
-        st.error("Please provide an incident description first.")
-    else:
-        result_text = None
-        execution_successful = False
-        
-        # Key Rotation Processing Loop
-        for index, active_key in enumerate(keys_to_try):
-            try:
-                # Assign active token index payload values down to runtime contexts
-                os.environ["GEMINI_API_KEY"] = active_key
-                
-                gemini_llm = LLM(
-                    model=f"gemini/{selected_model}",
-                    api_key=active_key,
-                    temperature=0.4
-                )
-                
-                # 4. Defining Agents
-                legal_agent = Agent(
-                    role='Chief Legal Compliance Officer',
-                    goal='Analyze incidents for regulatory impact, legal compliance violations, and strict reporting deadlines.',
-                    backstory='You are an expert corporate attorney specialized in industrial safety regulations, OSHA compliance, and legal liability mitigation.',
-                    verbose=True,
-                    allow_delegation=False,
-                    llm=gemini_llm,
-                    max_iter=2
-                )
-
-                hr_agent = Agent(
-                    role='Director of HR and Employee Safety',
-                    goal='Ensure employee welfare, outline immediate medical/insurance workflows, and guide management on worker protocols.',
-                    backstory='You are a seasoned HR executive focused on workplace safety protocols and employee care.',
-                    verbose=True,
-                    allow_delegation=False,
-                    llm=gemini_llm,
-                    max_iter=2
-                )
-
-                pr_agent = Agent(
-                    role='VP of B2B Client Relations and PR Strategy',
-                    goal='Draft diplomatic, accurate communications for corporate clients affected by downstream supply chain or service delays.',
-                    backstory='You are a master communicator who handles high-stakes enterprise client relations.',
-                    verbose=True,
-                    allow_delegation=False,
-                    llm=gemini_llm,
-                    max_iter=2
-                )
-
-                orchestrator_agent = Agent(
-                    role='Executive Incident Commander',
-                    goal='Consolidate and synthesize the specialized reports from Legal, HR, and PR into a master executive brief.',
-                    backstory='You are the crisis manager. You review departmental drafts and organize them into an execution report.',
-                    verbose=True,
-                    allow_delegation=True,
-                    llm=gemini_llm,
-                    max_iter=2
-                )
-
-                # 5. Defining Tasks
-                task_legal = Task(
-                    description=f"Analyze this incident: {incident_input}. Identify potential regulatory infractions (e.g., OSHA). Note mandatory legal deadlines.",
-                    expected_output="A structured Legal Vulnerability and Regulatory Compliance report.",
-                    agent=legal_agent
-                )
-
-                task_hr = Task(
-                    description=f"Analyze this incident: {incident_input}. Outline immediate next steps for HR, worker care, and supervisor checklists.",
-                    expected_output="An HR Action Plan and Supervisor Safety Compliance Checklist.",
-                    agent=hr_agent
-                )
-
-                task_pr = Task(
-                    description=f"Analyze this incident: {incident_input}. Draft a professional, reassuring B2B email notice to clients explaining adjustments without claiming liability.",
-                    expected_output="A ready-to-send professional email draft.",
-                    agent=pr_agent
-                )
-
-                task_orchestration = Task(
-                    description="Gather outputs from Legal, HR, and PR. Synthesize them into one beautifully organized Executive Incident Brief containing clear Markdown headings.",
-                    expected_output="A complete Markdown Executive Incident Brief summarizing sections from all departments.",
-                    agent=orchestrator_agent
-                )
-
-                # 6. Kick off Swarm with Custom CSS Scanner Element UI layout bounds
-                anim_container = st.empty()
-                anim_container.markdown(f"""
-                    <div class='cyber-scanner'>
-                        <h4 style='color: #00f2fe; margin: 0;'>🛡️ System Threat Analysis Active (Key Profile #{index+1})</h4>
-                        <p style='color: #94a3b8; margin: 5px 0 0 0; font-size: 0.9rem;'>Orchestrating autonomous swarm tasks via {selected_model} tier node path routing...</p>
-                    </div>
-                """, unsafe_allow_html=True)
-
-                with st.spinner("Processing framework agent logic..."):
-                    incident_crew = Crew(
-                        agents=[legal_agent, hr_agent, pr_agent, orchestrator_agent],
-                        tasks=[task_legal, task_hr, task_pr, task_orchestration],
-                        process=Process.sequential, 
-                        verbose=True
-                    )
-                    crew_output = incident_crew.kickoff()
-                    result_text = getattr(crew_output, 'raw', str(crew_output))
-                
-                # Success flag exit condition toggle
-                anim_container.empty()
-                execution_successful = True
-                break
-                
-            except Exception as e:
-                error_str = str(e)
-                anim_container.empty()
-                
-                # Catch 429 quota exhaustion messages specifically
-                if "429" in error_str or "RESOURCE_EXHAUSTED" in error_str:
-                    st.warning(f"⚠️ Key Profile {index+1} hit rate thresholds. Automatically shifting connection lanes...")
-                    continue
-                else:
-                    st.error(f"Execution stop fault caught: {error_str}")
-                    break
-        else:
-            st.error("❌ All provided Gemini API token key structures have completely exhausted their available metric profiles. Please update settings keys strings.")
-            
-        # 7. Rendering final premium dashboard view on completion break condition tracking
-        if execution_successful and result_text:
-            st.success("✅ Agent Swarm successfully completed crisis workflow execution!")
-            st.markdown("### 📋 Generated Executive Summary Dashboard")
-            
-            st.markdown(f"<div class='report-box'>", unsafe_allow_html=True)
-            st.markdown(result_text)
-            st.markdown("</div>", unsafe_allow_html=True)
-            
-            st.download_button(
-                label="📥 Download Executive Incident Brief (Markdown File)",
-                data=result_text,
-                file_name="Executive_Incident_Brief.md",
-                mime="text/markdown"
-            )
+    st.dataframe(mock_ledger_data, use_container_width=True)
