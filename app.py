@@ -7,7 +7,7 @@ import time
 # 1. High-End Page Configuration & Premium Cyberpunk/Dark Styling
 st.set_page_config(page_title="OmniCompliance AI | Control Center", page_icon="🛡️", layout="wide")
 
-# Advanced CSS Injection - Custom Variables, Telemetry Grid, and Node Aesthetics
+# Advanced CSS Injection
 st.markdown("""
     <style>
     .stApp {
@@ -199,12 +199,12 @@ with tab1:
             result_text = None
             execution_successful = False
             
-            # Form standard structural models list starting with user preference
+            # Setup an expandable live system log container to keep the UI clean
+            log_container = st.expander("🛠️ System Core Failover Analytics Matrix", expanded=True)
+            
             model_fallback_pool = [selected_model, "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash-latest"]
-            # Deduplicate while preserving order
             model_fallback_pool = list(dict.fromkeys(model_fallback_pool))
             
-            # Nested loop: Try keys, if model strings throw errors, fallback to next viable model
             pipeline_broken = False
             
             for operational_model in model_fallback_pool:
@@ -213,6 +213,10 @@ with tab1:
                     
                 for index, active_key in enumerate(keys_to_try):
                     try:
+                        # Introduce a 2-second rate limit buffer before calling the agent workflow
+                        log_container.info(f"⏳ Synchronizing network lanes to clear active concurrency caps...")
+                        time.sleep(2.0)
+                        
                         os.environ["GEMINI_API_KEY"] = active_key
                         
                         gemini_llm = LLM(
@@ -301,13 +305,12 @@ with tab1:
                         error_str = str(e)
                         anim_container.empty()
                         
-                        # Catch structural service issues (429, 503, 404 strings) to switch tokens or targets
                         if any(ind in error_str for ind in ["429", "503", "404", "RESOURCE_EXHAUSTED", "UNAVAILABLE", "NOT_FOUND"]):
-                            st.warning(f"🔄 Routing Lane Alert on {operational_model} (Token #{index+1}). Dynamic failover routing active...")
-                            time.sleep(0.5)
+                            log_container.warning(f"🔄 Failover Event: {operational_model} (Token #{index+1}) throttled. Switching context routing pathway...")
+                            time.sleep(1.5)
                             continue
                         else:
-                            st.error(f"Internal Interruption: {error_str}")
+                            log_container.error(f"Internal Interruption: {error_str}")
                             pipeline_broken = True
                             break
                             
